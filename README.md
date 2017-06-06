@@ -42,6 +42,6 @@ this.flowManager.clear()
 
 
 # npm
-'''
+```
 npm install easy-flow-manager
-'''
+```
