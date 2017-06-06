@@ -3,21 +3,43 @@ DEBUG = false;
 export default class FlowManager {
   methodQueue = [];
   isProcessingItem = false;
+  feed = [];
+  queueStartedListener = null;
+  queueClearedListener = null;
+
+  addQueueStateListeners(onQueueCleared, onQueueStarted) {
+    this.queueClearedListener = onQueueCleared;
+    this.queueStartedListener = onQueueStarted;
+  }
 
   queue(method: (onTaskEnded: method) => void, ...args) {
     if (DEBUG) console.log("Queuing", method);
+
+    if (this.methodQueue.length == 0 && this.queueStartedListener) this.queueStartedListener();
+
     this.methodQueue.push({ method, args });
     this.handleNextItem();
   }
 
-  clear()
-  {
-    this.isProcessingItem = false;
-    this.methodQueue = [];
+  // This item will feed the next item in the queue with parameters when calling it's onTaskEnded callback
+  queueAndFeed(method: (onTaskEnded: method) => void, ...args) {
+    if (DEBUG) console.log("Queuing with feeding", method);
+
+    if (this.methodQueue.length == 0 && this.queueStartedListener) this.queueStartedListener();
+
+    this.methodQueue.push({ method, args, feeding: true });
+    this.handleNextItem();
   }
 
-  getQueue()
-  {
+  clear(triggerListener) {
+    this.isProcessingItem = false;
+    this.methodQueue = [];
+    if (triggerListener && this.queueClearedListener) {
+      this.queueClearedListener();
+    }
+  }
+
+  getQueue() {
     return this.methodQueue;
   }
 
@@ -32,11 +54,18 @@ export default class FlowManager {
 
     if (DEBUG) console.log("Executing", item.method);
 
-    item.method(this.onTaskEnded.bind(this), ...item.args);
+    item.method(this.onTaskEnded.bind(this, item.feeding), ...this.feed, ...item.args);
   }
 
-  onTaskEnded() {
+  onTaskEnded(feeding, ...feed) {
     this.isProcessingItem = false;
-    this.handleNextItem();
+    if (feeding) {
+      this.feed = feed;
+    } else {
+      this.feed = [];
+    }
+
+    if (this.methodQueue.length > 0) this.handleNextItem();
+    else if (this.queueClearedListener) this.queueClearedListener();
   }
 }
