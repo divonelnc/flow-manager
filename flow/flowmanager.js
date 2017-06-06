@@ -7,7 +7,7 @@ export default class FlowManager {
   queue(method: (onTaskEnded: method) => void, ...args) {
     if (DEBUG) console.log("Queuing", method);
     this.methodQueue.push({ method, args });
-    this.handleNextAction();
+    this.handleNextItem();
   }
 
   clear()
@@ -16,7 +16,12 @@ export default class FlowManager {
     this.methodQueue = [];
   }
 
-  handleNextAction() {
+  getQueue()
+  {
+    return this.methodQueue;
+  }
+
+  handleNextItem() {
     if (this.isProcessingItem) return;
     if (this.methodQueue.length == 0) return;
 
@@ -32,6 +37,6 @@ export default class FlowManager {
 
   onTaskEnded() {
     this.isProcessingItem = false;
-    this.handleNextAction();
+    this.handleNextItem();
   }
 }
