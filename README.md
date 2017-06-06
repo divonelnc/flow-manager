@@ -5,7 +5,9 @@ Simple tool to queue functions in ES6
 
 Import the FlowManager class, then create a new instance of `FlowManager` and use the `queue` function to queue your asynchronious function
 
-`import FlowManager from "../flow/flowmanager";`
+```
+import FlowManager from "../flow/flowmanager";
+```
 
 ```
 this.flowManager = new FlowManager();
