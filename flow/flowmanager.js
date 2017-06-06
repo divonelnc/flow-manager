@@ -2,7 +2,7 @@ DEBUG = false;
 
 export default class FlowManager {
   methodQueue = [];
-  isReacting = false;
+  isProcessingItem = false;
 
   queue(method: (onTaskEnded: method) => void, ...args) {
     if (DEBUG) console.log("Queuing", method);
@@ -10,11 +10,17 @@ export default class FlowManager {
     this.handleNextAction();
   }
 
+  clear()
+  {
+    this.isProcessingItem = false;
+    this.methodQueue = [];
+  }
+
   handleNextAction() {
-    if (this.isReacting) return;
+    if (this.isProcessingItem) return;
     if (this.methodQueue.length == 0) return;
 
-    this.isReacting = true;
+    this.isProcessingItem = true;
 
     const item = this.methodQueue[0];
     this.methodQueue = this.methodQueue.slice(1);
@@ -25,7 +31,7 @@ export default class FlowManager {
   }
 
   onTaskEnded() {
-    this.isReacting = false;
+    this.isProcessingItem = false;
     this.handleNextAction();
   }
 }
