@@ -22,8 +22,7 @@ All functions that you want to queue must have a callback function has their fir
 This callback needs to be called when the function is done executing, so that the flow manager can move to the next item in the queue.
 
 ```
-myAsynchronousFunction( onTaskEnded, parameter )
-{
+function myAsynchronousFunction( onTaskEnded, parameter ){
     // Asynchronous task
     ...
     
@@ -31,6 +30,28 @@ myAsynchronousFunction( onTaskEnded, parameter )
 }
 ```
 
+## Queue and feed
+
+You can also have a queued function feed the next function in the queue with parameters
+
+```
+this.flowManager.queueAndFeed( myQuery );
+this.flowManager.queue( queryResultDependentFunc );
+```
+
+```
+function myQuery( feed ){
+    var onQuerySucces = function( result ){
+        feed(result);
+    }
+    
+    asynchronousQuery( onQuerySucces );    
+}
+
+function queryResultDependentFunc( queryResult ){
+    console.log(queryResult)
+}
+```
 
 ## Clearing
 
@@ -38,6 +59,23 @@ You can clear the queue to stop it from processing further items by calling:
 
 ```
 this.flowManager.clear()
+```
+
+## Listening to the queue state
+
+Listening to the queue state can be useful if, for example, you want to implement a "loading" message
+
+```
+this.flowManager.addQueueStateListeners( onQueueEnded, onQueueStarted);
+```
+
+```
+function onQueueStarted(){
+    this.isLoading = true;
+}
+function onQueueEnded(){
+    this.isLoading = false;
+}
 ```
 
 
