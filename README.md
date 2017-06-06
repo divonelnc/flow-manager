@@ -3,7 +3,7 @@ Simple tool to queue functions in ES6
 
 ## Queueing functions
 
-Import the FlowManager class, then create a new instance of `FlowManager` and use the `queue` function to queue your asynchronous function
+Import the FlowManager class, then create a new instance of `FlowManager` and use the `queue` function to queue your asynchronous functions
 
 ```
 import FlowManager from "../flow/flowmanager";
@@ -48,8 +48,9 @@ function myQuery( feed ){
     asynchronousQuery( onQuerySucces );    
 }
 
-function queryResultDependentFunc( queryResult ){
+function queryResultDependentFunc( onTaskEnded, queryResult ){
     console.log(queryResult)
+    onTaskEnded();
 }
 ```
 
