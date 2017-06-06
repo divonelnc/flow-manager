@@ -4,13 +4,9 @@ export default class FlowManager {
   methodQueue = [];
   isReacting = false;
 
-  queue(
-    method: (onReactionOver: method, target: ?object, newState: ?object) => void,
-    target: ?object,
-    newState: ?object
-  ) {
+  queue(method: (onReactionOver: method) => void, ...args) {
     if (DEBUG) console.log("Queuing", method);
-    this.methodQueue.push({ method, target, newState });
+    this.methodQueue.push({ method, args });
     this.handleNextAction();
   }
 
@@ -25,7 +21,7 @@ export default class FlowManager {
 
     if (DEBUG) console.log("Executing", action.method);
 
-    action.method(this.onReactionOver.bind(this), action.target, action.newState);
+    action.method(this.onReactionOver.bind(this), ...action.args);
   }
 
   onReactionOver() {
