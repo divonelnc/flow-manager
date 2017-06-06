@@ -18,8 +18,8 @@ this.flowManager.queue( thirdFunctionToExecute, parameter );
 
 
 ### IMPORTANT:
-All functions that you want to queue must have a callback function has their first parameter. 
-This callback needs to be called when the function is done executing, so that the flow manager can move to the next item in the queue.
+All functions that you want to queue must have a callback function as their first parameter. 
+This callback then needs to be called when the function is done executing, so that the flow manager can move to the next item in the queue.
 
 ```
 function myAsynchronousFunction( onTaskEnded, parameter ){
@@ -54,14 +54,6 @@ function queryResultDependentFunc( onTaskEnded, queryResult ){
 }
 ```
 
-## Clearing
-
-You can clear the queue to stop it from processing further items by calling:
-
-```
-this.flowManager.clear()
-```
-
 ## Listening to the queue state
 
 Listening to the queue state can be useful if, for example, you want to implement a "loading" message
@@ -77,6 +69,15 @@ function onQueueStarted(){
 function onQueueEnded(){
     this.isLoading = false;
 }
+```
+
+## Clearing
+
+You can clear the queue to stop it from processing further items by calling:
+
+```
+this.flowManager.clear()
+this.flowManager.clear(true) // True: Will trigger the onQueueEnded listener after clearing the queue
 ```
 
 
