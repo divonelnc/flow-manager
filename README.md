@@ -28,3 +28,10 @@ myAsynchroniousFunction( onTaskEnded, parameter )
     onTaskEnded();
 }
 ```
+
+
+### Clearing
+
+You can clear the queue to stop it from processing further items by calling:
+
+`this.flowManager.clear()`
