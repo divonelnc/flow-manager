@@ -30,7 +30,7 @@ myAsynchroniousFunction( onTaskEnded, parameter )
 ```
 
 
-### Clearing
+## Clearing
 
 You can clear the queue to stop it from processing further items by calling:
 
