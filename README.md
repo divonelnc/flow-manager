@@ -97,18 +97,29 @@ function onQueueEnded(){
     this.isLoading = false;
 }
 ```
-
-## Clearing
-
+## Misc
+### Clearing
 You can clear the queue to stop it from processing further items by calling:
 
 ```
-this.flowManager.clear()
-this.flowManager.clear(true) // True: Will trigger the onQueueEnded listener after clearing the queue
+this.flowManager.clear();
+this.flowManager.clear(true); // True: Will trigger the onQueueEnded listener after clearing the queue
 ```
 
+### Get Queue
+Returns all the items currently in queue
+```
+this.flowManager.getQueue();
+```
 
-# Installation: npm
+### Get item in progress
+Return the item currently being processed. Returns null if there is none.
+```
+this.flowManager.getItemInProgress();
+```
+
+# Installation
+Download the file directly from github or use npm:
 ```
 npm install easy-flow-manager
 ```
