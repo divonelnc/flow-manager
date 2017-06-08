@@ -54,6 +54,33 @@ function queryResultDependentFunc( onTaskEnded, queryResult ){
 }
 ```
 
+## Queue Lazy
+
+Allow you to read the argument for queued function only when the function is being called
+
+```
+this.value = "Hello";
+this.flowManager.queue( changeValue, "How are you?" );
+this.flowManager.queue( readValue, this.value); // Will log the value at the time of starting the queue: "Hello";
+this.flowManager.queueLazy( readValue, () => this.value ); // Will log the value at the time of call: "How are you?";
+```
+
+```
+function changeValue( onTaskEnded, newValue )
+{
+    // Asynchonous change of value    
+    //....    
+    this.value = newValue;    
+    onTaskEnded();
+}
+
+function readState( onTaskEnded, valueToRead )
+{
+    console.log(valueToRead);
+    onTaskEnded();
+}
+```
+
 ## Listening to the queue state
 
 Listening to the queue state can be useful if, for example, you want to implement a "loading" message
