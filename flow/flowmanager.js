@@ -1,38 +1,50 @@
-DEBUG = false;
-
 export default class FlowManager {
+  DEBUG = false;
   methodQueue = [];
-  isProcessingItem = false;
   feed = [];
   queueStartedListener = null;
   queueClearedListener = null;
+  itemInProgress = null;
 
   addQueueStateListeners(onQueueCleared, onQueueStarted) {
     this.queueClearedListener = onQueueCleared;
     this.queueStartedListener = onQueueStarted;
   }
 
-  queue(method: (onTaskEnded: method) => void, ...args) {
-    if (DEBUG) console.log("Queuing", method);
+  triggerStartListener() {
+    if (this.methodQueue.length == 0 && this.queueStartedListener) {
+      this.queueStartedListener();
+    }
+  }
 
-    if (this.methodQueue.length == 0 && this.queueStartedListener) this.queueStartedListener();
+  queue(method, ...args) {
+    if (this.DEBUG) console.log("Queuing", method);
+    this.triggerStartListener();
 
     this.methodQueue.push({ method, args });
     this.handleNextItem();
   }
 
   // This item will feed the next item in the queue with parameters when calling it's onTaskEnded callback
-  queueAndFeed(method: (onTaskEnded: method) => void, ...args) {
-    if (DEBUG) console.log("Queuing with feeding", method);
-
-    if (this.methodQueue.length == 0 && this.queueStartedListener) this.queueStartedListener();
+  queueAndFeed(method, ...args) {
+    if (this.DEBUG) console.log("Queuing with feeding", method);
+    this.triggerStartListener();
 
     this.methodQueue.push({ method, args, feeding: true });
     this.handleNextItem();
   }
 
+  // Instead of arguments, pass on methods that will return the arguments when called
+  queueLazy(method, ...collectionMethods) {
+    if (this.DEBUG) console.log("Queuing Lazy parameters", method);
+    this.triggerStartListener();
+
+    this.methodQueue.push({ method, collectionMethods, lazy: true });
+    this.handleNextItem();
+  }
+
   clear(triggerListener) {
-    this.isProcessingItem = false;
+    this.itemInProgress = null;
     this.methodQueue = [];
     if (triggerListener && this.queueClearedListener) {
       this.queueClearedListener();
@@ -43,22 +55,35 @@ export default class FlowManager {
     return this.methodQueue;
   }
 
-  handleNextItem() {
-    if (this.isProcessingItem) return;
-    if (this.methodQueue.length == 0) return;
+  getItemInProgress() {
+    return this.itemInProgress;
+  }
 
-    this.isProcessingItem = true;
+  handleNextItem() {
+    if (this.itemInProgress) return;
+    if (this.methodQueue.length == 0) return;
 
     const item = this.methodQueue[0];
     this.methodQueue = this.methodQueue.slice(1);
 
-    if (DEBUG) console.log("Executing", item.method);
+    if (this.DEBUG) console.log("Executing", item.method);
 
-    item.method(this.onTaskEnded.bind(this, item.feeding), ...this.feed, ...item.args);
+    let args = item.args;
+    if (item.lazy) {
+      args = [];
+      for (var i = 0; i < item.collectionMethods.length; i++) {
+        const collectArgument = item.collectionMethods[i];
+        const collectedArg = collectArgument();
+        args.push(collectedArg);
+      }
+    }
+
+    this.itemInProgress = item;
+    item.method(this.onTaskEnded.bind(this, item.feeding), ...this.feed, ...args);
   }
 
   onTaskEnded(feeding, ...feed) {
-    this.isProcessingItem = false;
+    this.itemInProgress = null;
     if (feeding) {
       this.feed = feed;
     } else {
