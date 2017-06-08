@@ -61,8 +61,8 @@ Allow you to read the argument for queued function only when the function is bei
 ```
 this.value = "Hello";
 this.flowManager.queue( changeValue, "How are you?" );
-this.flowManager.queue( readValue, this.value); // Will log the value at the time of starting the queue: "Hello";
-this.flowManager.queueLazy( readValue, () => this.value ); // Will log the value at the time of call: "How are you?";
+this.flowManager.queue( readValue, this.value); // Log current value: "Hello";
+this.flowManager.queueLazy( readValue, () => this.value ); // Log value when reached in queue: "How are you?";
 ```
 
 ```
