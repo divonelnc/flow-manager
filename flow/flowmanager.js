@@ -97,6 +97,11 @@ export default class FlowManager {
     item.method(this.onTaskEnded.bind(this, item.feeding), ...this.feed, ...args);
   }
 
+  setWarningDelay(delay)
+  {
+    this.warningDelay = delay;
+  }
+
   displayWarning() {
     console.warn(
       "WARNING - FlowManager: Function",
