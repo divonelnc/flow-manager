@@ -118,6 +118,14 @@ Return the item currently being processed. Returns null if there is none.
 this.flowManager.getItemInProgress();
 ```
 
+### Warnings
+
+If a function runs for more than 2000ms without calling the onTaskEnded callback, a warning will show in the console. You can change the delay before the warning shows with the following function:
+```
+// Set the delay to 4000ms
+this.flowManager.setWarningDelay( 4000 );
+```
+
 # Installation
 Download the file directly from github or use npm:
 ```
